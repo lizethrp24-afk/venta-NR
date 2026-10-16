@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transporte Fluvial Amazónico - Sistema de Reservas Online</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-blue: #0b3c5d;
+            --secondary-blue: #1d2731;
+            --primary-red: #c0392b;
+            --accent-red: #e74c3c;
+            --cream-bg: #faf8f5;
+            --cream-card: #f5f0eb;
+            --cream-light: #fffdfa;
+            --text-main: #2c3e50;
+            --text-muted: #627d98;
+            --border-color: #e2d9cd;
+            --shadow-md: 0 6px 20px rgba(11, 60, 93, 0.1);
+            --shadow-lg: 0 12px 32px rgba(11, 60, 93, 0.15);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Open Sans', sans-serif; background-color: var(--cream-bg); color: var(--text-main); line-height: 1.6; }
+        h1, h2, h3, h4, .brand-title { font-family: 'Montserrat', sans-serif; font-weight: 700; }
+
+        /* BARRA DE NAVEGACIÓN Y MENÚ PRINCIPAL */
+        .navbar {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-md);
+            border-bottom: 4px solid var(--primary-red);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand-logo { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .brand-logo i { font-size: 2rem; color: var(--primary-red); background: white; padding: 8px; border-radius: 50%; }
+        .brand-title { font-size: 1.3rem; letter-spacing: 0.5px; text-transform: uppercase; color: var(--cream-light); }
+        .brand-subtitle { font-size: 0.7rem; color: #bdc3c7; letter-spacing: 1px; text-transform: uppercase; }
+
+        .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+        .nav-link {
+            color: var(--cream-card);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .nav-link:hover, .nav-link.active { color: var(--accent-red); }
+
+        /* SECCIONES / VISTAS DE LA WEB */
+        .page-section { display: none; }
+        .page-section.active { display: block; }
+
+        /* HERO / INICIO */
+        .hero {
+            background: linear-gradient(135deg, rgba(11, 60, 93, 0.92), rgba(29, 39, 49, 0.95)), 
+                        url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1200&q=80') center/cover;
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+        .hero h1 { font-size: 2.5rem; margin-bottom: 0.8rem; color: var(--cream-light); }
+        .hero p { font-size: 1.1rem; max-width: 800px; margin: 0 auto 2rem auto; color: #d1d8e0; }
+        
+        .hero-buttons { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+        .btn-hero {
+            background-color: var(--primary-red);
+            color: white;
+            padding: 0.9rem 2rem;
+            border-radius: 6px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+        .btn-hero:hover { background-color: var(--accent-red); transform: translateY(-2px); }
+        .btn-hero.secondary { background-color: transparent; border: 2px solid white; }
+        .btn-hero.secondary:hover { background-color: rgba(255,255,255,0.1); }
+
+        /* CONTENEDOR GENERAL */
+        .main-container { max-width: 1100px; margin: 2rem auto; padding: 0 1.5rem; }
+
+        .card-panel {
+            background: var(--cream-light);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            margin-bottom: 2.5rem;
+        }
+        .card-header {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 1.25rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 3px solid var(--primary-red);
+        }
+        .card-header h2 { font-size: 1.3rem; }
+        .card-body { padding: 2rem; }
+
+        /* FORMULARIO */
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
+        .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+        .form-group label { font-weight: 600; font-size: 0.9rem; color: var(--primary-blue); display: flex; align-items: center; gap: 8px; }
+        .form-group label i { color: var(--primary-red); width: 16px; }
+        .form-control {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            background-color: var(--cream-bg);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            font-family: inherit;
+        }
+        .form-control:focus { outline: none; border-color: var(--primary-blue); background-color: white; }
+
+        /* SECCIÓN FACTURA */
+        .factura-box {
+            background-color: var(--cream-card);
+            border: 1px solid var(--border-color);
+            padding: 1.25rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .factura-fields { display: none; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1rem; }
+
+        /* MÉTODOS DE PAGO */
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .payment-card {
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            background: white;
+        }
+        .payment-card input { display: none; }
+        .payment-card.selected { border-color: var(--primary-red); background-color: rgba(192, 57, 43, 0.03); }
+        .payment-card i { font-size: 2rem; color: var(--primary-blue); margin-bottom: 0.5rem; }
+        .payment-card h4 { font-size: 1rem; color: var(--primary-blue); }
+        .payment-card p { font-size: 0.8rem; color: var(--text-muted); }
+
+        /* AVISO TIEMPO OFICINA */
+        #officeWarning {
+            display: none;
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* MAPA DE ASIENTOS */
+        .seats-section { background-color: var(--cream-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem; }
+        .bus-container { max-width: 650px; margin: 1rem auto; background: white; border: 2px solid var(--primary-blue); border-radius: 12px; padding: 1.5rem; }
+        .bus-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; justify-items: center; }
+        .seat-btn {
+            width: 45px; height: 45px; background-color: white; border: 2px solid var(--primary-blue);
+            color: var(--primary-blue); font-weight: 700; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
+        .seat-btn:hover:not(.occupied) { background-color: var(--primary-red); border-color: var(--primary-red); color: white; }
+        .seat-btn.selected { background-color: var(--primary-red); border-color: var(--primary-red); color: white; }
+        .seat-btn.occupied { background-color: #cbd5e1; border-color: #94a3b8; color: #64748b; cursor: not-allowed; }
+
+        /* CHECKOUT */
+        .checkout-bar { display: flex; justify-content: space-between; align-items: center; background-color: var(--primary-blue); color: white; padding: 1.25rem 2rem; border-radius: 8px; }
+        .price-amount { font-size: 1.8rem; font-weight: 800; color: var(--cream-light); }
+        .btn-primary { background-color: var(--primary-red); color: white; border: none; padding: 0.9rem 2rem; font-weight: 700; border-radius: 6px; cursor: pointer; text-transform: uppercase; }
+
+        /* VISTA EMBARCACIONES */
+        .fleet-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        .fleet-card { background: white; border-radius: 8px; border: 1px solid var(--border-color); overflow: hidden; box-shadow: var(--shadow-md); }
+        .fleet-img { width: 100%; height: 200px; object-fit: cover; }
+        .fleet-body { padding: 1.5rem; }
+
+        /* ATENCIÓN AL CLIENTE */
+        .support-box { text-align: center; padding: 3rem 1.5rem; background: white; border-radius: 12px; border: 1px solid var(--border-color); }
+        .btn-whatsapp { background-color: #25d366; color: white; padding: 1rem 2.5rem; border-radius: 30px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; font-size: 1.1rem; margin-top: 1.5rem; }
+
+        /* LOGIN ADMINISTRADOR */
+        .admin-login-box { max-width: 400px; margin: 4rem auto; background: white; padding: 2rem; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: var(--shadow-md); text-align: center; }
+
+        /* PANEL ADMIN */
+        .admin-section { background-color: var(--secondary-blue); color: white; border-radius: 12px; padding: 2rem; }
+        .custom-table { width: 100%; border-collapse: collapse; background-color: #1a232e; border-radius: 8px; overflow: hidden; margin-top: 1rem; }
+        .custom-table th { background-color: #0f1722; padding: 1rem; text-align: left; font-size: 0.8rem; text-transform: uppercase; color: var(--cream-card); border-bottom: 2px solid var(--primary-red); }
+        .custom-table td { padding: 0.9rem 1rem; border-bottom: 1px solid #2a3646; color: #cbd5e1; font-size: 0.9rem; }
+
+        /* MODAL BOLETA SIMPLE */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 2.5rem; border-radius: 12px; width: 450px; text-align: center; color: var(--text-main); }
+        .ticket-receipt { border: 2px dashed var(--primary-blue); padding: 1.5rem; border-radius: 8px; margin: 1.5rem 0; text-align: left; background: var(--cream-bg); font-size: 0.9rem; }
+
+        footer { background-color: var(--secondary-blue); color: #95a5a6; padding: 2rem; text-align: center; border-top: 3px solid var(--primary-red); margin-top: 4rem; }
+    </style>
+</head>
+<body>
+
+    <!-- BARRA DE NAVEGACIÓN -->
+    <nav class="navbar">
+        <div class="brand-logo" onclick="switchTab('home')">
+            <i class="fa-solid fa-ship"></i>
+            <div>
+                <div class="brand-title">TRANSPORTE FLUVIAL</div>
+                <div class="brand-subtitle">Nauta ⇄ Yurimaguas</div>
+            </div>
+        </div>
+        <div class="nav-links">
+            <button class="nav-link active" onclick="switchTab('home')"><i class="fa-solid fa-house"></i> Inicio</button>
+            <button class="nav-link" onclick="switchTab('booking')"><i class="fa-solid fa-ticket"></i> Comprar Pasaje</button>
+            <button class="nav-link" onclick="switchTab('fleet')"><i class="fa-solid fa-ship"></i> Ver Embarcaciones</button>
+            <button class="nav-link" onclick="switchTab('support')"><i class="fa-solid fa-headset"></i> Atención al Cliente</button>
+            <button class="nav-link" onclick="switchTab('adminLogin')" style="color: var(--accent-red);"><i class="fa-solid fa-user-shield"></i> Admin</button>
+        </div>
+    </nav>
+
+    <!-- 1. VISTA INICIO / HERO -->
+    <div id="view-home" class="page-section active">
+        <section class="hero">
+            <h1>Transporte Fluvial Seguro y Confiable en la Amazonía</h1>
+            <p>Conectando Nauta con Yurimaguas y escalas intermedias (Maypuco, Saramuro, Santa Rita, Lagunas, Santa Cruz, Ollanta). Salidas todos los viernes a las 4:00 PM y retornos los domingos a las 4:00 PM.</p>
+            <div class="hero-buttons">
+                <button class="btn-hero" onclick="switchTab('booking')"><i class="fa-solid fa-ticket"></i> Comprar Pasaje Online</button>
+                <button class="btn-hero secondary" onclick="switchTab('support')"><i class="fa-brands fa-whatsapp"></i> Contactar Asesor</button>
+            </div>
+        </section>
+
+        <div class="main-container">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 2rem;">
+                <div style="background: white; padding: 2rem; border-radius: 8px; border: 1px solid var(--border-color); text-align: center;">
+                    <i class="fa-solid fa-route" style="font-size: 2.5rem; color: var(--primary-red); margin-bottom: 1rem;"></i>
+                    <h3>Rutas Principales e Intermedias</h3>
+                    <p style="color: var(--text-muted); margin-top: 0.5rem;">Cobertura completa en toda la cuenca fluvial con paradas seguras en Maypuco, Saramuro, Lagunas y más.</p>
+                </div>
+                <div style="background: white; padding: 2rem; border-radius: 8px; border: 1px solid var(--border-color); text-align: center;">
+                    <i class="fa-solid fa-chair" style="font-size: 2.5rem; color: var(--primary-blue); margin-bottom: 1rem;"></i>
+                    <h3>Embarcaciones de 100 Asientos</h3>
+                    <p style="color: var(--text-muted); margin-top: 0.5rem;">Comodidad garantizada con asientos reclinables, chalecos salvavidas y monitoreo permanente de seguridad.</p>
+                </div>
+                <div style="background: white; padding: 2rem; border-radius: 8px; border: 1px solid var(--border-color); text-align: center;">
+                    <i class="fa-solid fa-clock" style="font-size: 2.5rem; color: var(--primary-red); margin-bottom: 1rem;"></i>
+                    <h3>Horarios Estrictos</h3>
+                    <p style="color: var(--text-muted); margin-top: 0.5rem;">Salidas puntuales todos los viernes y retornos los domingos a las 4:00 PM sin excepciones.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. VISTA COMPRAR PASAJE -->
+    <div id="view-booking" class="page-section">
+        <div class="main-container">
+            <div class="card-panel">
+                <div class="card-header">
+                    <i class="fa-solid fa-ticket"></i>
+                    <h2>Reserva y Compra de Pasaje Fluvial</h2>
+                </div>
+                <div class="card-body">
+                    <form id="bookingForm">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label><i class="fa-solid fa-user"></i> Nombres y Apellidos:</label>
+                                <input type="text" id="pName" class="form-control" required placeholder="Ej. Juan Carlos Pérez Silva">
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fa-solid fa-id-card"></i> DNI:</label>
+                                <input type="text" id="pDni" class="form-control" required placeholder="Ej. 45896201">
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fa-solid fa-phone"></i> Teléfono / WhatsApp:</label>
+                                <input type="tel" id="pPhone" class="form-control" required placeholder="Ej. 987654321">
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fa-solid fa-envelope"></i> Correo Electrónico:</label>
+                                <input type="email" id="pEmail" class="form-control" required placeholder="correo@ejemplo.com">
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fa-solid fa-route"></i> Ruta Seleccionada:</label>
+                                <select id="pRoute" class="form-control">
+                                    <option value="200" data-origen="Nauta" data-destino="Yurimaguas">Nauta ⇄ Yurimaguas (Completo) - S/ 200.00</option>
+                                    <option value="180" data-origen="Nauta" data-destino="Lagunas">Nauta ⇄ Lagunas - S/ 180.00</option>
+                                    <option value="150" data-origen="Saramuro" data-destino="Yurimaguas">Saramuro ⇄ Yurimaguas - S/ 150.00</option>
+                                    <option value="120" data-origen="Maypuco" data-destino="Santa Rita">Tramo Intermedio (Maypuco / Saramuro / Santa Rita / Santa Cruz / Ollanta) - S/ 120.00</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fa-solid fa-calendar-days"></i> Fecha de Salida (Viernes 4 PM):</label>
+                                <input type="date" id="pDate" class="form-control" required>
+                            </div>
+                        </div>
+
+                        <!-- FACTURA OPCIONAL -->
+                        <div class="factura-box">
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 600; color: var(--primary-blue);">
+                                <input type="checkbox" id="requestFactura" onchange="toggleFacturaFields()" style="width: 18px; height: 18px; accent-color: var(--primary-red);">
+                                ¿Desea solicitar Factura? (RUC requerido)
+                            </label>
+                            <div class="factura-fields" id="facturaContainer">
+                                <div class="form-group">
+                                    <label>RUC:</label>
+                                    <input type="text" id="fRuc" class="form-control" placeholder="Ej. 20601234567">
+                                </div>
+                                <div class="form-group">
+                                    <label>Razón Social:</label>
+                                    <input type="text" id="fRazon" class="form-control" placeholder="Nombre de Empresa S.A.C.">
+                                </div>
+                                <div class="form-group" style="grid-column: 1/-1;">
+                                    <label>WhatsApp o Correo para Envío de Factura:</label>
+                                    <input type="text" id="fEnvio" class="form-control" placeholder="Número de WhatsApp o Correo electrónico">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- MÉTODOS DE PAGO -->
+                        <h4 style="margin-bottom: 1rem; color: var(--primary-blue);"><i class="fa-solid fa-credit-card"></i> Seleccione Método de Pago:</h4>
+                        <div class="payment-methods">
+                            <label class="payment-card selected" onclick="selectPayment('yape')">
+                                <input type="radio" name="payment" value="yape" checked>
+                                <i class="fa-solid fa-mobile-screen-button"></i>
+                                <h4>Yape / Plin</h4>
+                                <p>Pago digital inmediato</p>
+                            </label>
+                            <label class="payment-card" onclick="selectPayment('transferencia')">
+                                <input type="radio" name="payment" value="transferencia">
+                                <i class="fa-solid fa-building-columns"></i>
+                                <h4>Transferencia Bancaria</h4>
+                                <p>BIF / BCP / BBVA</p>
+                            </label>
+                            <label class="payment-card" onclick="selectPayment('oficina')">
+                                <input type="radio" name="payment" value="oficina">
+                                <i class="fa-solid fa-store"></i>
+                                <h4>Pago en Oficina</h4>
+                                <p>Plazo máximo: 15 min</p>
+                            </label>
+                        </div>
+
+                        <!-- AVISO 15 MINUTOS OFICINA -->
+                        <div id="officeWarning">
+                            <i class="fa-solid fa-triangle-exclamation"></i> <strong>Aviso Importante:</strong> Al seleccionar "Pago en Oficina", tu reserva tendrá un tiempo límite estrictamente de <strong>15 minutos</strong> para acercarte a cancelar. De lo contrario, la reserva será cancelada automáticamente y el asiento se liberará.
+                        </div>
+
+                        <!-- SELECCIÓN DE ASIENTOS -->
+                        <div class="seats-section">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                <h4 style="color: var(--primary-blue);"><i class="fa-solid fa-couch"></i> Seleccione su Asiento (Capacidad: 100)</h4>
+                                <p style="font-size: 0.9rem; font-weight: 600;">Asiento: <span id="selectedSeatText" style="color: var(--primary-red);">Ninguno</span></p>
+                            </div>
+                            <div class="bus-container">
+                                <div style="text-align: center; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 1rem; text-transform: uppercase;">Proa / Frente de Embarcación</div>
+                                <div class="bus-grid" id="bookingSeatsGrid"></div>
+                            </div>
+                        </div>
+
+                        <!-- CHECKOUT -->
+                        <div class="checkout-bar">
+                            <div>
+                                <span style="font-size: 0.8rem; color: #bdc3c7; text-transform: uppercase;">Total a Cancelar</span>
+                                <div class="price-amount" id="checkoutTotal">S/ 200.00</div>
+                            </div>
+                            <button type="submit" class="btn-primary">
+                                <i class="fa-solid fa-check-circle"></i> Confirmar y Generar Reserva
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. VISTA VER EMBARCACIONES -->
+    <div id="view-fleet" class="page-section">
+        <div class="main-container">
+            <h2 style="color: var(--primary-blue); margin-bottom: 1.5rem;"><i class="fa-solid fa-ship"></i> Nuestra Flota Fluvial</h2>
+            <div class="fleet-grid">
+                <div class="fleet-card">
+                    <img src="image_44ff05.jpg" alt="Embarcación por fuera" class="fleet-fleet-img fleet-img">
+                    <div class="fleet-body">
+                        <h3 style="color: var(--primary-blue); margin-bottom: 0.5rem;">Embarcación Expresa NR-6</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Nuestra moderna embarcación fluvial totalmente equipada para travesías seguras por la Amazonía, con motor de alta potencia y diseño hidrodinámico.</p>
+                        <span style="font-weight: 700; color: var(--primary-red);"><i class="fa-solid fa-chair"></i> 100 Asientos Reclinables</span>
+                    </div>
+                </div>
+                <div class="fleet-card">
+                    <img src="image_44fb26.jpg" alt="Embarcación por dentro" class="fleet-img">
+                    <div class="fleet-body">
+                        <h3 style="color: var(--primary-blue); margin-bottom: 0.5rem;">Interior y Confort a Bordo</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Cabina climatizada con pasillos amplios, asientos ergonómicos numerados, iluminación LED y equipo completo de chalecos salvavidas bajo norma vigente.</p>
+                        <span style="font-weight: 700; color: #2ecc71;"><i class="fa-solid fa-shield-halved"></i> 100% Homologado y Seguro</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. VISTA ATENCIÓN AL CLIENTE -->
+    <div id="view-support" class="page-section">
+        <div class="main-container">
+            <div class="support-box">
+                <i class="fa-brands fa-whatsapp" style="font-size: 4rem; color: #25d366; margin-bottom: 1rem;"></i>
+                <h2 style="color: var(--primary-blue);">Atención Directa con Asesor Humano</h2>
+                <p style="color: var(--text-muted); max-width: 600px; margin: 1rem auto;">¿Tienes dudas sobre tu equipaje, ubicación de embarque o necesitas asistencia personalizada con tu boleto? Nuestro equipo te atiende en tiempo real vía WhatsApp.</p>
+                <a href="https://wa.me/51900000000?text=Hola,%20deseo%20información%20sobre%20los%20pasajes%20fluviales%20a%20Yurimaguas" target="_blank" class="btn-whatsapp">
+                    <i class="fa-brands fa-whatsapp" style="font-size: 1.5rem;"></i> Chatear con Asesor Ahora
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. LOGIN ADMINISTRADOR -->
+    <div id="view-adminLogin" class="page-section">
+        <div class="admin-login-box">
+            <i class="fa-solid fa-lock" style="font-size: 3rem; color: var(--primary-red); margin-bottom: 1rem;"></i>
+            <h2 style="color: var(--primary-blue); margin-bottom: 1rem;">Acceso Administrativo</h2>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">Ingrese la clave secreta para ver la lista de pasajeros y métricas reservadas.</p>
+            <form onsubmit="handleAdminLogin(event)">
+                <div class="form-group" style="margin-bottom: 1rem; text-align: left;">
+                    <label>Contraseña Admin:</label>
+                    <input type="password" id="adminPass" class="form-control" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%;">Ingresar al Panel</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 6. PANEL DE ADMINISTRADOR (OCULTO PARA CLIENTES) -->
+    <div id="view-adminPanel" class="page-section">
+        <div class="main-container">
+            <div class="admin-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary-red); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+                    <div>
+                        <h2><i class="fa-solid fa-user-shield"></i> Panel Gerencial Exclusivo Administradores</h2>
+                        <p style="font-size: 0.85rem; color: #94a3b8;">Gestión de pasajeros y control de ingresos de la embarcación.</p>
+                    </div>
+                    <button onclick="switchTab('home')" class="btn-hero secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Cerrar Sesión Admin</button>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                    <div style="background: #1e2a38; padding: 1.5rem; border-radius: 8px; border: 1px solid #2c3e50;">
+                        <h3 id="adminTotalSold" style="font-size: 1.8rem; color: #38bdf8;">0</h3>
+                        <p style="font-size: 0.85rem; color: #94a3b8; text-transform: uppercase;">Pasajes Vendidos</p>
+                    </div>
+                    <div style="background: #1e2a38; padding: 1.5rem; border-radius: 8px; border: 1px solid #2c3e50;">
+                        <h3 id="adminTotalEarnings" style="font-size: 1.8rem; color: #2ecc71;">S/ 0.00</h3>
+                        <p style="font-size: 0.85rem; color: #94a3b8; text-transform: uppercase;">Ganancia Total</p>
+                    </div>
+                </div>
+
+                <h3 style="margin-bottom: 1rem; color: var(--cream-card);"><i class="fa-solid fa-users"></i> Lista Oficial de Pasajeros (Vista Privada)</h3>
+                <div style="overflow-x: auto;">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Nombre y Apellido</th>
+                                <th>DNI</th>
+                                <th>Origen</th>
+                                <th>Destino</th>
+                                <th>N° Asiento</th>
+                                <th>Pago / Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminPassengerTable">
+                            <tr>
+                                <td colspan="6" style="text-align: center; color: #94a3b8; padding: 2rem;">No hay pasajeros registrados aún.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE BOLETA SIMPLE -->
+    <div id="receiptModal" class="modal">
+        <div class="modal-content">
+            <i class="fa-solid fa-circle-check" style="font-size: 3rem; color: #2ecc71; margin-bottom: 1rem;"></i>
+            <h3 style="color: var(--primary-blue);">¡Reserva Exitosa!</h3>
+            <p style="font-size: 0.9rem; color: var(--text-muted);">Su pasaje fluvial ha sido registrado correctamente.</p>
+            
+            <div class="ticket-receipt" id="receiptDetails">
+                <!-- Generado dinámicamente -->
+            </div>
+
+            <button onclick="closeReceiptModal()" class="btn-primary" style="width: 100%;">Aceptar y Volver al Inicio</button>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>© 2026 <strong>Transporte Fluvial S.A.</strong> - Todos los derechos reservados.</p>
+        <p style="font-size: 0.8rem; margin-top: 5px; color: #627d98;">Navegación segura Nauta ⇄ Yurimaguas y escalas intermedias.</p>
+    </footer>
+
+    <!-- SCRIPT DE NAVEGACIÓN Y FUNCIONALIDAD -->
+    <script>
+        // Navegación entre pestañas
+        function switchTab(tabId) {
+            document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+
+            if (tabId === 'adminPanel') {
+                document.getElementById('view-adminPanel').classList.add('active');
+            } else {
+                document.getElementById(`view-${tabId}`).classList.add('active');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Selección de Método de Pago
+        function selectPayment(method) {
+            document.querySelectorAll('.payment-card').forEach(card => card.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            document.querySelector(`input[value="${method}"]`).checked = true;
+
+            const warning = document.getElementById('officeWarning');
+            if (method === 'oficina') {
+                warning.style.display = 'block';
+            } else {
+                warning.style.display = 'none';
+            }
+        }
+
+        // Mostrar / Ocultar campos de Factura
+        function toggleFacturaFields() {
+            const container = document.getElementById('facturaContainer');
+            const isChecked = document.getElementById('requestFactura').checked;
+            container.style.display = isChecked ? 'grid' : 'none';
+        }
+
+        // Generar 100 asientos dinámicamente
+        const seatsGrid = document.getElementById('bookingSeatsGrid');
+        let selectedSeat = null;
+        let passengersData = [];
+        let totalRevenue = 0;
+
+        function initSeats() {
+            seatsGrid.innerHTML = '';
+            for (let i = 1; i <= 100; i++) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'seat-btn';
+                btn.textContent = i;
+
+                // Simular algunos asientos ocupados
+                if ([3, 7, 12, 19, 25, 40].includes(i)) {
+                    btn.classList.add('occupied');
+                }
+
+                btn.addEventListener('click', () => {
+                    if (btn.classList.contains('occupied')) return;
+                    document.querySelectorAll('.seat-btn').forEach(s => {
+                        if (!s.classList.contains('occupied')) s.classList.remove('selected');
+                    });
+                    btn.classList.add('selected');
+                    selectedSeat = i;
+                    document.getElementById('selectedSeatText').textContent = `N° ${i}`;
+                });
+
+                seatsGrid.appendChild(btn);
+            }
+        }
+
+        // Actualizar precio según ruta
+        const routeSelect = document.getElementById('pRoute');
+        routeSelect.addEventListener('change', () => {
+            const price = routeSelect.value;
+            document.getElementById('checkoutTotal').textContent = `S/ ${parseFloat(price).toFixed(2)}`;
+        });
+
+        // Envío de Formulario de Compra
+        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('pName').value.trim();
+            const dni = document.getElementById('pDni').value.trim();
+            const phone = document.getElementById('pPhone').value.trim();
+            const email = document.getElementById('pEmail').value.trim();
+            const selectedOption = routeSelect.options[routeSelect.selectedIndex];
+            const origin = selectedOption.getAttribute('data-origen');
+            const destination = selectedOption.getAttribute('data-destino');
+            const price = parseFloat(routeSelect.value);
+            const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
+
+            if (!selectedSeat) {
+                alert('Por favor, selecciona un número de asiento en la embarcación.');
+                return;
+            }
+
+            // Marcar asiento ocupado
+            document.querySelectorAll('.seat-btn').forEach(btn => {
+                if (parseInt(btn.textContent) === selectedSeat) {
+                    btn.classList.remove('selected');
+                    btn.classList.add('occupied');
+                }
+            });
+
+            // Registrar pasajero
+            passengersData.push({
+                name, dni, phone, email, origin, destination, seat: selectedSeat, price, paymentMethod
+            });
+
+            totalRevenue += price;
+            updateAdminPanelData();
+
+            // Mostrar boleta simple modal
+            showReceiptModal({
+                name, dni, origin, destination, seat: selectedSeat, price, paymentMethod
+            });
+        });
+
+        function updateAdminPanelData() {
+            document.getElementById('adminTotalSold').textContent = passengersData.length;
+            document.getElementById('adminTotalEarnings').textContent = `S/ ${totalRevenue.toFixed(2)}`;
+
+            const tbody = document.getElementById('adminPassengerTable');
+            tbody.innerHTML = '';
+            passengersData.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${p.name}</strong></td>
+                    <td>${p.dni}</td>
+                    <td>${p.origin}</td>
+                    <td>${p.destination}</td>
+                    <td><span style="color:#38bdf8; font-weight:700;">N° ${p.seat}</span></td>
+                    <td>S/ ${p.price.toFixed(2)} (${p.paymentMethod.toUpperCase()})</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function showReceiptModal(data) {
+            const details = document.getElementById('receiptDetails');
+            details.innerHTML = `
+                <strong>EMPRESA DE TRANSPORTE FLUVIAL S.A.</strong><br>
+                RUC: 20555555551<br>
+                --------------------------------------------------<br>
+                <strong>BOLETA DE VENTA SIMPLE</strong><br>
+                --------------------------------------------------<br>
+                <strong>Pasajero:</strong> ${data.name}<br>
+                <strong>DNI:</strong> ${data.dni}<br>
+                <strong>Ruta:</strong> ${data.origin} ➔ ${data.destination}<br>
+                <strong>Asiento Asignado:</strong> N° ${data.seat}<br>
+                <strong>Método de Pago:</strong> ${data.paymentMethod.toUpperCase()}<br>
+                --------------------------------------------------<br>
+                <strong>TOTAL PAGADO: S/ ${data.price.toFixed(2)}</strong><br>
+            `;
+            document.getElementById('receiptModal').style.display = 'flex';
+        }
+
+        function closeReceiptModal() {
+            document.getElementById('receiptModal').style.display = 'none';
+            document.getElementById('bookingForm').reset();
+            selectedSeat = null;
+            document.getElementById('selectedSeatText').textContent = 'Ninguno';
+            document.getElementById('facturaContainer').style.display = 'none';
+            document.getElementById('officeWarning').style.display = 'none';
+            document.getElementById('checkoutTotal').textContent = 'S/ 200.00';
+            initSeats();
+            switchTab('home');
+        }
+
+        // Login de Administrador Simple
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const pass = document.getElementById('adminPass').value;
+            if (pass === 'admin123') { // Contraseña simulada de acceso admin
+                document.getElementById('adminPass').value = '';
+                switchTab('adminPanel');
+            } else {
+                alert('Contraseña incorrecta. Acceso restringido solo a administradores.');
+            }
+        }
+
+        // Inicializar
+        initSeats();
+    </script>
+</body>
+</html>
